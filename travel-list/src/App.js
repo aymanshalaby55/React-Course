@@ -19,7 +19,9 @@ function App() {
   function handleDelete(id) {
     setItem((items) => items.filter((item) => item.id !== id));
   }
-
+  function handleDeleteAll() {
+    setItem([]);
+  }
   function handleBox(id) {
     setItem((items) =>
       items.map((item) =>
@@ -35,6 +37,7 @@ function App() {
         items={item}
         handleDelete={handleDelete}
         onToggleItem={handleBox}
+        handleDeleteAll={handleDeleteAll}
       />
       <Stats numItems={numItems} />
     </div>
