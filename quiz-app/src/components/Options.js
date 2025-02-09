@@ -1,12 +1,18 @@
 import React from "react"
 
-const Options = ({ question }) => {
+const Options = ({ question, dispatch, answer }) => {
     console.log(question);
+    const hasAnswer = answer !== null;
     return (
         <div className="options">
             {
-                question.options.map((opt) => (
-                    <button className="btn btn-option" key={opt.id}>
+                question.options.map((opt, index) => (
+                    <button className={`btn btn-option ${index === answer ? "answer" : ""} 
+                        ${hasAnswer ?
+                            index === question.correctOption ? "correct" : "wrong" : ""}`}
+                        key={index} onClick={() => { dispatch({ type: "newAnswer", payload: index }) }}
+                        disabled={hasAnswer}
+                    >
                         {opt}
                     </button>
                 ))

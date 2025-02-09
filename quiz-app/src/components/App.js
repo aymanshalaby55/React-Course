@@ -5,18 +5,22 @@ import Main from "./Main";
 import Error from "../Error";
 import StartScreen from "./StartScreen";
 import Question from "./Question";
+import NextButton from "./NextButton";
+import Progress from "./Progress";
 
 const initialState = {
   questions: [],
   status: "loading",
   index: 0,
+  answer: null,
+  points: 0
 }
 
 export default function App() {
 
-  const [{ questions, status, index }, dispatch] = useReducer(reducer, initialState);
+  const [{ questions, status, index, answer, points }, dispatch] = useReducer(reducer, initialState);
   const questionNum = questions.length;
-
+  const maxPossiblePoints = questions.reduce((prev, cur) => prev + cur.point, 0)
 
 
   console.log(index);
@@ -37,6 +41,19 @@ export default function App() {
         return {
           ...state,
           status: "start",
+        }
+      case "newAnswer":
+        const questoin = state.questions.at(state.index);
+        return {
+          ...state,
+          answer: action.payload,
+          points: (questoin.correctOption === action.payload) ? state.points + questoin.point : state.point,
+        }
+      case "nextQuestion":
+        return {
+          ...state,
+          index: state.index + 1,
+          answer: null
         }
       default:
         return new Error("unkown Error");
@@ -66,7 +83,12 @@ export default function App() {
       {status === 'loading' && <Loader />}
       {status === 'error' && <Error />}
       {status === 'ready' && <StartScreen dispatch={dispatch} questionNum={questionNum} />}
-      {status === 'start' && <Question question={questions[index]} />}
+      {status === 'start' && (
+        <>
+          <Progress questionNum={questionNum} index={index} maxPossiblePoints={maxPossiblePoints} answer={answer} />
+          <Question question={questions[index]} dispatch={dispatch} answer={answer} />
+          <NextButton dispatch={dispatch} answer={answer} />
+        </>)}
     </Main>
   </div>
 }
